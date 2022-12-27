@@ -1,0 +1,21 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - "./config/nginx-conf:/etc/sites-available/default"
+    ports:
+      - "80:80"
+    depends_on:
+      - "node-app"
+  node-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node-app
+    environment:
+      - FS_ENV_ID=FS_ENV_ID
+      - FS_API_KEY=FS_API_KEY
+    ports:
+      - "8081:8081"
