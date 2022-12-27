@@ -19,11 +19,12 @@ app.get('/', async (req, res) => {
   if (req.method === 'HEAD' || req.get('x-fs-experiences')) {
     await flagship.start(
       visitorId,
-      JSON.stringify({
+      {
         nbBooking: 4,
-      }),
+      },
     );
   }
+
   let cacheKey = flagship.getHashKey();
 
   if (cacheKey === false) {
@@ -35,10 +36,7 @@ app.get('/', async (req, res) => {
     let experiencesCookie = cacheKey === 'optout' ? cacheKey : `${visitorId}@${cacheKey}`;
     res.setHeader('x-fs-visitor', visitorId);
     res.setHeader('x-fs-experiences', cacheKey);
-    res.end();
   }
-
-  res.setHeader('Cache-Control', 'max-age=1, s-maxage=600');
 
   if (cacheKey === 'optout') {
     res.write('Global Cache 🔥\n');

@@ -1,8 +1,12 @@
+import fetch from "node-fetch";
+
 export default class Flagship {
+
+  decision = null;
+
   constructor(envId, apiKey) {
     this.envId = envId;
     this.apiKey = apiKey;
-    this.decision = null;
   }
 
   async start(visitorID, context) {
@@ -39,8 +43,9 @@ export default class Flagship {
       return false;
     }
     const experiences = [];
-    for (const flag of this.decision) {
-      experiences[flag.metadata.campaignId] = flag.metadata.variationId;
+
+    for (const flag of Object.entries(this.decision)) {
+      experiences[flag[1].metadata?.campaignId] = flag[1].metadata?.variationId;
     }
 
     return Object.keys(experiences)
