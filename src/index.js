@@ -4,6 +4,8 @@ import express from 'express';
 const app = express()
 const port = 8081
 
+app.set('etag', false)
+
 app.get('/', async (req, res) => {
 
   // replace envId & apiKey with your own flagship credentials
@@ -27,6 +29,8 @@ app.get('/', async (req, res) => {
 
   let cacheKey = flagship.getHashKey();
 
+  let FsFlag = flagship.getFlag('restaurant_cta_review_text', 'Leave a Review')
+
   if (cacheKey === false) {
     cacheKey = 'optout';
     visitorId = 'ignore-me';
@@ -38,10 +42,15 @@ app.get('/', async (req, res) => {
     res.setHeader('x-fs-experiences', cacheKey);
   }
 
+  res.setHeader('Cache-Control', 'max-age=1, s-maxage=600');
+  res.setHeader("Content-Type", "text/html");
+
+  res.write('<pre>');
+
   if (cacheKey === 'optout') {
-    res.write('Global Cache 🔥\n');
+    res.write('Global Cache 🔥 <br />');
   }
-  res.write(`<button>${flagship.getFlag('restaurant_cta_review_text', 'Leave a Review')}</button>`);
+  res.write(`<button>${FsFlag}</button>`);
   res.end();
 })
 
