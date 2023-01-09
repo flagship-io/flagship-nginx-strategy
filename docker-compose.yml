@@ -5,6 +5,9 @@ services:
     container_name: nginx
     volumes:
       - "./config/default.conf:/etc/nginx/conf.d/default.conf"
+      - "./config/hello.js:/etc/nginx/njs/http/hello.js"
+      - "./config/check-cookie.js:/etc/nginx/njs/http/check-cookie.js"
+      - "./config/nginx.conf:/etc/nginx/nginx.conf:ro"
     ports:
       - "80:80"
     depends_on:
