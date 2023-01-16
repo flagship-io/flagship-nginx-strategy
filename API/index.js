@@ -27,7 +27,7 @@ const homeHandler = async (req, res) => {
     visitorId = req.get('x-fs-visitor');
   }
 
-  // If either of the above conditions is true, start the Flagship instance using the visitor ID and a configuration object
+  // Start the Flagship instance using the visitor ID and a configuration object
   await flagship.start(
     visitorId,
     {
@@ -49,6 +49,7 @@ const homeHandler = async (req, res) => {
     visitorId = 'ignore-me';
   }
 
+  // hash cache key combination
   let cacheKeyHash = createHash('sha256').update(cacheKey).digest("hex")
 
   // Check if the request method is 'HEAD'
@@ -61,11 +62,11 @@ const homeHandler = async (req, res) => {
     res.setHeader('x-fs-experiences-hash', cacheKeyHash);
   }
 
+  // Set 'x-fs-visitor' and 'x-fs-experiences' headers on the response
   res.setHeader('x-fs-visitor', visitorId);
   res.setHeader('x-fs-experiences', cacheKey);
   res.setHeader('x-fs-cookie', `${visitorId}@${cacheKeyHash}`);
   res.setHeader('x-fs-experiences-hash', cacheKeyHash);
-
 
   // Set 'Cache-Control' and 'Content-Type' headers on the response
   res.setHeader('Cache-Control', 'max-age=1, s-maxage=600');
@@ -84,7 +85,6 @@ const homeHandler = async (req, res) => {
   // End the response
   res.end();
 }
-
 
 app.get('/server', homeHandler);
 

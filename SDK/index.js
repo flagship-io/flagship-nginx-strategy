@@ -39,22 +39,22 @@ const homeHandler = async (req, res) => {
         nbBooking: 4,
     })
 
+    // FetchFlags automatically call the Flagship Decision API to run campaign assignments according to the current user context and retrieve applicable flags
     await visitor.fetchFlags();
 
     let experiences = [];
 
+    // Return an array of all flags data fetched for the current visitor
     visitor.getFlagsDataArray().map((data) => {
 
         let experience = `${data?.campaignId}:${data?.variationId}`;
         experiences.push(experience);
     })
 
+    // Check if experiences exists
     if (experiences) {
         cacheKey = experiences.join("|");
     }
-
-    // Get the flag value for the key 'restaurant_cta_review_text' and default value 'Leave a Review'
-    //let FsFlag = visitor.getFlag('restaurant_cta_review_text', 'Leave a Review')
 
     // If the cache key is false
     if (!cacheKey) {
@@ -64,6 +64,7 @@ const homeHandler = async (req, res) => {
         visitorId = 'ignore-me';
     }
 
+    // hash cache key combination
     let cacheKeyHash = createHash('sha256').update(cacheKey).digest("hex")
 
     // Check if the request method is 'HEAD'
@@ -76,7 +77,7 @@ const homeHandler = async (req, res) => {
         res.setHeader('x-fs-experiences-hash', cacheKeyHash);
     }
 
-    // Set 'Cache-Control' and 'Content-Type' headers on the response
+    // Set 'x-fs-visitor' and 'x-fs-experiences' headers on the response
     res.setHeader('x-fs-visitor', visitorId);
     res.setHeader('x-fs-experiences', cacheKey);
     res.setHeader('x-fs-cookie', `${visitorId}@${cacheKeyHash}`);
