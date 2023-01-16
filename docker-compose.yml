@@ -5,6 +5,8 @@ services:
     container_name: nginx
     volumes:
       - "./config/default.conf:/etc/nginx/conf.d/default.conf"
+      - "./config/check-cookie.js:/etc/nginx/njs/http/check-cookie.js"
+      - "./config/nginx.conf:/etc/nginx/nginx.conf:ro"
     ports:
       - "80:80"
     depends_on:
@@ -12,10 +14,12 @@ services:
   node-app:
     build:
       context: .
+      args:
+        FS_MODE: API #or SDK
       dockerfile: Dockerfile
     container_name: node-app
     environment:
-      - FS_ENV_ID=FS_ENV_ID
-      - FS_API_KEY=FS_API_KEY
+      FS_ENV_ID: FS_ENV_ID
+      FS_API_KEY: FS_API_KEY
     ports:
       - "8081:8081"
