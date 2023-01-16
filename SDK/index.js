@@ -1,6 +1,9 @@
 import pkg from '@flagship.io/js-sdk';
 const { Flagship } = pkg;
 import express from 'express';
+const {
+    createHash,
+} = await import('node:crypto');
 
 const app = express();
 const port = 8081;
@@ -61,9 +64,25 @@ const homeHandler = async (req, res) => {
         visitorId = 'ignore-me';
     }
 
+    let cacheKeyHash = createHash('sha256').update(cacheKey).digest("hex")
+
+    // Check if the request method is 'HEAD'
+    if (req.method === 'HEAD') {
+
+        // If it is, set the 'x-fs-visitor' and 'x-fs-experiences' headers on the response
+        res.setHeader('x-fs-visitor', visitorId);
+        res.setHeader('x-fs-experiences', cacheKey);
+        res.setHeader('x-fs-cookie', `${visitorId}@${cacheKeyHash}`);
+        res.setHeader('x-fs-experiences-hash', cacheKeyHash);
+    }
+
     // Set 'Cache-Control' and 'Content-Type' headers on the response
     res.setHeader('x-fs-visitor', visitorId);
     res.setHeader('x-fs-experiences', cacheKey);
+    res.setHeader('x-fs-cookie', `${visitorId}@${cacheKeyHash}`);
+    res.setHeader('x-fs-experiences-hash', cacheKeyHash);
+
+    // Set 'Cache-Control' and 'Content-Type' headers on the response
     res.setHeader('Cache-Control', 'max-age=1, s-maxage=600');
     res.setHeader("Content-Type", "text/html");
 
