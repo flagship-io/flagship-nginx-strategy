@@ -1,10 +1,13 @@
 import Flagship from './flagshipRequest.js';
 import express from 'express';
+const {
+  createHash,
+} = await import('node:crypto');
 
-const app = express()
-const port = 8081
+const app = express();
+const port = 8081;
 
-app.set('etag', false)
+app.set('etag', false);
 
 const homeHandler = async (req, res) => {
 
@@ -24,17 +27,13 @@ const homeHandler = async (req, res) => {
     visitorId = req.get('x-fs-visitor');
   }
 
-  // Check if the request method is 'HEAD' or if the 'x-fs-experiences' header is present
-  if (req.method === 'HEAD' || req.get('x-fs-experiences')) {
-
-    // If either of the above conditions is true, start the Flagship instance using the visitor ID and a configuration object
-    await flagship.start(
-      visitorId,
-      {
-        nbBooking: 4,
-      },
-    );
-  }
+  // If either of the above conditions is true, start the Flagship instance using the visitor ID and a configuration object
+  await flagship.start(
+    visitorId,
+    {
+      nbBooking: 4,
+    },
+  );
 
   // Get the cache key for the Flagship instance
   let cacheKey = flagship.getHashKey();
@@ -50,13 +49,23 @@ const homeHandler = async (req, res) => {
     visitorId = 'ignore-me';
   }
 
+  let cacheKeyHash = createHash('sha256').update(cacheKey).digest("hex")
+
   // Check if the request method is 'HEAD'
   if (req.method === 'HEAD') {
 
     // If it is, set the 'x-fs-visitor' and 'x-fs-experiences' headers on the response
     res.setHeader('x-fs-visitor', visitorId);
     res.setHeader('x-fs-experiences', cacheKey);
+    res.setHeader('x-fs-cookie', `${visitorId}@${cacheKeyHash}`);
+    res.setHeader('x-fs-experiences-hash', cacheKeyHash);
   }
+
+  res.setHeader('x-fs-visitor', visitorId);
+  res.setHeader('x-fs-experiences', cacheKey);
+  res.setHeader('x-fs-cookie', `${visitorId}@${cacheKeyHash}`);
+  res.setHeader('x-fs-experiences-hash', cacheKeyHash);
+
 
   // Set 'Cache-Control' and 'Content-Type' headers on the response
   res.setHeader('Cache-Control', 'max-age=1, s-maxage=600');
@@ -77,7 +86,7 @@ const homeHandler = async (req, res) => {
 }
 
 
-app.get('/server', homeHandler)
+app.get('/server', homeHandler);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`)

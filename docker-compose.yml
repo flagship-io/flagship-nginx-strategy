@@ -14,10 +14,12 @@ services:
   node-app:
     build:
       context: .
+      args:
+        FS_MODE: API #or SDK
       dockerfile: Dockerfile
     container_name: node-app
     environment:
-      - FS_ENV_ID=FS_ENV_ID
-      - FS_API_KEY=FS_API_KEY
+      FS_ENV_ID: FS_ENV_ID
+      FS_API_KEY: FS_API_KEY
     ports:
       - "8081:8081"

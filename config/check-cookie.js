@@ -1,10 +1,7 @@
-// import the 'crypto' module
-var crypto = require('crypto')
-
 async function GetHeader(r) {
 
-    // check if the incoming request contains a "Cookie" header with the value "fs_experiences"
-    if (!r.headersIn['Cookie'] || !r.headersIn['Cookie'].includes("fs_experiences")) {
+    // check if the incoming request contains a "Cookie" header with the value "fs-experiences"
+    if (!r.headersIn['Cookie'] || !r.headersIn['Cookie'].includes("fs-experiences")) {
 
         // make a "HEAD" request to the Flagship server
         let reply = await ngx.fetch('http://node-app:8081/server', {
@@ -16,17 +13,17 @@ async function GetHeader(r) {
         });
 
         // retrieve the headers from the response
-        let text = await reply.headers;
-
-        // create a sha1 hash of the "x-fs-experiences" header, encoded in 'base64url' format
-        let hashExperiences = crypto.createHash('sha1').update(text.get('x-fs-experiences')).digest('base64url')
+        let headers = await reply.headers;
 
         // set headers
-        r.headersOut["x-fs-experiences"] = text.get('x-fs-visitor') + "@" + text.get('x-fs-experiences');
-        r.headersOut["x-fs-combination"] = text.get('x-fs-experiences');
-        r.headersOut["x-fs-combination-hash"] = hashExperiences;
-        r.headersOut["x-fs-visitor"] = text.get('x-fs-visitor');
-        r.headersOut["x-set-cookie"] = "fs_experiences=" + text.get('x-fs-visitor') + "@" + text.get('x-fs-experiences') + "; path=/; domain=localhost";
+        r.headersOut["x-fs-experiences"] = headers.get('x-fs-experiences');
+        r.headersOut["x-fs-experiences-hash"] = headers.get('x-fs-experiences-hash');
+        r.headersOut["x-fs-visitor"] = headers.get('x-fs-visitor');
+        r.headersOut["x-fs-cookie"] = headers.get('x-fs-cookie');
+        r.headersOut["x-set-cookie"] = "fs-experiences=" + headers.get('x-fs-cookie') + "; path=/; domain=localhost";
+
+    } else {
+        r.headersOut["x-fs-experiences-hash"] = r.headersIn['Cookie'].split(" ").find((p) => p.includes("fs-experiences")).split("@")[1].replace(";", "");
     }
 
     // return the request with a 200 status code
