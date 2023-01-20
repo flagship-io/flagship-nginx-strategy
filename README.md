@@ -20,7 +20,40 @@ Since the strategy can be adopted by any web server or HTTP accelerator that man
 
 ### Configuration
 
-Fill the FS_ENV_ID and FS_API_KEY with your own credentials, and run ``` docker compose up -d```
+Make sure to include the NJS Module to your Nginx conf
+
+```
+load_module modules/ngx_http_js_module.so;
+```
+
+#### Dockerfile
+
+```
+FROM node:latest
+
+ARG FS_MODE
+
+RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+
+WORKDIR /home/node/app
+
+COPY ./${FS_MODE}/package*.json ./
+
+COPY ./${FS_MODE} ./
+
+USER node
+
+RUN npm install
+
+COPY --chown=node:node . .
+
+EXPOSE 8081
+
+CMD [ "node", "index.js" ]
+
+```
+
+#### docker-compose.yml
 
 ```
 version: "3.9"
@@ -50,6 +83,7 @@ services:
     ports:
       - "8081:8081"
 ```
+Fill the FS_ENV_ID and FS_API_KEY with your own credentials, and run ```docker compose up -d```
 
 ### Running
 
@@ -187,21 +221,20 @@ export default { GetHeader }
 
 ## Reference
 
+- [Server-side Content caching](https://docs.developers.flagship.io/docs/cache-layer)
 - [Nginx development guide](http://nginx.org/en/docs/dev/development_guide.html)
-- [Nginx module development](https://www.evanmiller.org/nginx-modules-guide.html)
-- [Echo module](https://github.com/openresty/echo-nginx-module)
-- [Extending nginx](https://www.nginx.com/resources/wiki/extending/)
-- [Introduction to NGINX Modules - Nicholas O'Brien](https://www.youtube.com/watch?v=rGs-6FgwtcQ)
+- [Njs scripting language](https://nginx.org/en/docs/njs/index.html)
 
 ## Contributors
 
 <table>
   <tr>
     <td align="center"><a href="https://github.com/Chadiii"><img src="https://avatars.githubusercontent.com/u/49269946?v=4" width="100px;" alt=""/><br /><sub><b>Chadi LAOULAOU</b></sub></a></td>
-    <td align="center"><a href="https://github.com/guillaumejacquart"><img src="https://avatars2.githubusercontent.com/u/5268752?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Guillaume JACQUART</b></sub></td>
+    <td align="center"><a href="https://github.com/guillaumejacquart"><img src="https://avatars2.githubusercontent.com/u/5268752?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Guillaume JACQUART</b></sub></a></td>
+    <td align="center"><a href="https://github.com/Madi-Ji"><img src="https://avatars.githubusercontent.com/u/6860236?v=4" width="100px;" alt=""/><br /><sub><b>Julien Madiot</b></sub></a></td>
   </tr>
 </table>
 
 ## License
 
-[Apache License.](https://github.com/flagship-io/flagship-nginx-module/blob/master/LICENSE)
+[Apache License.](https://github.com/flagship-io/flagship-nginx-strategy/blob/master/LICENSE)
