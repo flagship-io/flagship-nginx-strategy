@@ -15,8 +15,9 @@ services:
     build:
       context: .
       args:
-        FS_MODE: API #or SDK
+        FS_MODE: SDK #or API
       dockerfile: Dockerfile
+    image: ghcr.io/flagship-io/flagship-nginx-strategy  
     container_name: node-app
     environment:
       FS_ENV_ID: FS_ENV_ID
