@@ -52,7 +52,6 @@ EXPOSE 8081
 CMD [ "node", "index.js" ]
 
 ```
-
 #### docker-compose.yml
 
 ```
@@ -75,7 +74,7 @@ services:
       args:
         FS_MODE: SDK #or API
       dockerfile: Dockerfile
-      image: github.com/flagship-io/flagship-nginx-strategy
+      image: ghcr.io/flagship-io/flagship-nginx-strategy
     container_name: node-app
     environment:
       FS_ENV_ID: FS_ENV_ID
