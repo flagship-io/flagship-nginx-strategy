@@ -1,4 +1,19 @@
 import fetch from "node-fetch";
+import { createLogger, transports } from "winston";
+
+const logLevels = {
+  fatal: 0,
+  error: 1,
+  warn: 2,
+  info: 3,
+  debug: 4,
+  trace: 5,
+};
+
+const logger = createLogger({
+  levels: logLevels,
+  transports: [new transports.Console()],
+});
 
 export default class Flagship {
 
@@ -30,14 +45,15 @@ export default class Flagship {
 
       //check if response is not ok
       if (!response.ok) {
-        throw new Error(`Request failed: ${response.statusText}`);
+        logger.error(`Request failed: ${response.statusText}`)
+        return "optout";
       }
 
       //store the decision object and return it
       this.decision = await response.json();
       return this.decision;
     } catch (error) {
-      throw new Error(`Request failed: ${error.message}`);
+      logger.error(`Request failed: ${error.message}`)
     }
   }
 
