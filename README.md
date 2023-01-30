@@ -6,13 +6,23 @@
 
 # Flagship Strategy for Nginx
 
-## Usage
+### Overview
+
+This repository explains how to set a caching strategy for a Flagship usage with NGINX and Node.js as example.
 
 ### General concepts
 
-Following our module implementation for content caching in Nginx [Link](https://github.com/flagship-io/flagship-nginx-module), one of the downsides was that the visitor ID and context were computed at cache level and we don't have access to any high level or custom information about the visitor such as database informations. That lead us to think of a strategy and workflow in order to solve this issue and provide an all-in solution to content caching.
+Content caching greatly increases performance and reduces load on the infrastructure, it has an immediate impact on the experimentation & personalization possibilities of a web application. 
 
-In this strategy, the cache server run alongside a lightweight backend that synchronize with your Flagship configuration to provide feature flagging & experimentation abilities to the cache server, the lightweight backend can implement our SDKs or the Decision API with your custom visitor information coming from the databases. For more explanation check our documentation [Documentation](https://docs.developers.flagship.io/docs/solution-strategy)
+Following our module implementation for content caching in Nginx [Link](https://github.com/flagship-io/flagship-nginx-module), one of the downsides was that the visitor ID and context were computed at cache level and we don't have access to any high level or custom information about the visitor such as database informations. 
+
+That lead us to think of a strategy and workflow in order to solve this issue and provide an all-in solution to content caching.
+
+### How it works ?
+
+The cache server run alongside a lightweight backend that synchronize with your Flagship configuration to provide feature flagging & experimentation abilities.
+
+The lightweight backend can implement our SDKs or the Decision API with your custom visitor information coming from the databases. For more explanation check our documentation [Documentation](https://docs.developers.flagship.io/docs/solution-strategy)
 
 ### Implementation
 
